@@ -29,12 +29,12 @@ TODO:
 Here's what the layers look like:
 
 Layer 1: 
-|                  | TO(2) |      |       |            |
-|------------------|-------|------|-------|------------|
-|                  | TO(1) |      |       |            |
-|                  | TG(0) |      |       |            |
-| Toggle Game mode |       |      |       |            |
-| Toggle OLED      | CUT   | COPY | PASTE | PLAY/PAUSE |
+|                  | TO(2)       |      |       |            |
+|------------------|-------------|------|-------|------------|
+|                  | TO(1)       |      |       |            |
+|                  | TG(0)       |      |       |            |
+| Toggle Game mode | Scroll Mode |      |       |            |
+| Toggle OLED      | CUT         | COPY | PASTE | PLAY/PAUSE |
 
 Layer 2
 
