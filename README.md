@@ -25,3 +25,47 @@ TODO:
   -Fix game mode
   -Add splash screen for game mode
   -make oled display look nicer
+
+Here's what the layers look like:
+
+Layer 1: 
+|                  | TO(2) |      |       |            |
+|------------------|-------|------|-------|------------|
+|                  | TO(1) |      |       |            |
+|                  | TG(0) |      |       |            |
+| Toggle Game mode |       |      |       |            |
+| Toggle OLED      | CUT   | COPY | PASTE | PLAY/PAUSE |
+
+Layer 2
+
+|                  | TO(2)       |  F12 | F8    | F4         |
+|------------------|-------------|------|-------|------------|
+|                  | TO(1)       | F11  | F7    | F3         |
+|                  | TG(0)       | F10  | F6    | F2         |
+| Toggle Game mode | Scroll Mode | F9   | F5    | F1         |
+| Toggle OLED      | CUT         | COPY | PASTE | PLAY/PAUSE |
+
+|                  | TO(2)       |  M12 | M8    | M4         |
+|------------------|-------------|------|-------|------------|
+|                  | TO(1)       | M11  | M7    | M3         |
+|                  | TG(0)       | M10  | M6    | M2         |
+| Toggle Game mode | Scroll Mode | M9   | M5    | M1         |
+| Toggle OLED      | CUT         | COPY | PASTE | PLAY/PAUSE |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
