@@ -16,6 +16,11 @@
 
 #include QMK_KEYBOARD_H
 
+#define KC_COPY LCTL(KC_C)
+#define KC_PASTE LCTL(KC_V)
+#define KC_HL LCTL(KC_A)
+
+
 enum my_keycodes {
     KC_TGSCROLL = SAFE_RANGE,
     KC_GAMEMODE_ON,
@@ -26,39 +31,29 @@ enum my_keycodes {
     TOGGLE_OLED
 };
 
-bool enabled = true;
 short scroll_mode = 0;
 short scroll_mode_non_override = 0;
 
-void screen_on() {
-    enabled = false;
-    oled_off();
-}
-void screen_off() {
-    enabled = true;
-    oled_on();
-}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT( //base
-                 TG(2),   KC_PSLS, KC_PAST, KC_PMNS,
-                 TG(1),    KC_8,    KC_9,    KC_PPLS,
-                 TO(0),    KC_5,    KC_6,    KC_PPLS,
-        KC_GAMEMODE_ON, KC_TGSCROLL,    KC_2,    KC_3,    KC_ENT,
-        TOGGLE_OLED, CUT,    COPY,    LT(2, PASTE),  KC_PPLS),
-
-    [1] = LAYOUT( //func
+                 TG(2),   KC_F24, KC_F20, KC_F16,
+                 TG(1),    KC_F23,    KC_F19,    KC_F15,
+                 TO(0),    KC_F22,    KC_F18,    KC_F14,
+        KC_GAMEMODE_ON, KC_TGSCROLL,    KC_F21,    KC_F17,    KC_F13,
+        TOGGLE_OLED, KC_HL,    KC_COPY,    KC_PASTE,  LT(2,KC_MPLY)),
+    [1] = LAYOUT( //macro
+                 KC_TRNS, PROGRAMMABLE_BUTTON_12, PROGRAMMABLE_BUTTON_8, PROGRAMMABLE_BUTTON_4,
+                 KC_TRNS, PROGRAMMABLE_BUTTON_11, PROGRAMMABLE_BUTTON_7, PROGRAMMABLE_BUTTON_3,
+                 KC_TRNS, PROGRAMMABLE_BUTTON_10, PROGRAMMABLE_BUTTON_6, PROGRAMMABLE_BUTTON_2,
+        KC_TRNS,   KC_TRNS, PROGRAMMABLE_BUTTON_9, PROGRAMMABLE_BUTTON_5, PROGRAMMABLE_BUTTON_1,
+        KC_TRNS,   KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS),
+    [2] = LAYOUT( //func
                  KC_TRNS,   KC_F12, KC_F8, KC_F4,
                  KC_TRNS, KC_F11,   KC_F7, KC_F3,
                  KC_TRNS, KC_F10, KC_F6, KC_F2,
         KC_TRNS, KC_TRNS,  KC_F9, KC_F5, KC_F1,
-        KC_TRNS,   KC_TRNS, KC_INS,  KC_DEL,  KC_TRNS),
-
-    [2] = LAYOUT( //macro
-                 KC_TRNS, PROGRAMMABLE_BUTTON_12, PROGRAMMABLE_BUTTON_8, PROGRAMMABLE_BUTTON_4,
-                 KC_TRNS, PROGRAMMABLE_BUTTON_11, PROGRAMMABLE_BUTTON_7, PROGRAMMABLE_BUTTON_3,
-                 KC_TRNS, PROGRAMMABLE_BUTTON_10, PROGRAMMABLE_BUTTON_6, PROGRAMMABLE_BUTTON_2,
-        RESET,   KC_TRNS, PROGRAMMABLE_BUTTON_9, PROGRAMMABLE_BUTTON_5, PROGRAMMABLE_BUTTON_1,
-        KC_TRNS,   RESET,   KC_TRNS, KC_TRNS, KC_TRNS),
+        QK_BOOT,   KC_TRNS, KC_TRNS,  KC_TRNS,  KC_TRNS),
     [3] = LAYOUT( //game
                  KC_LCTL,   KC_LSFT, KC_TAB, KC_ESC,
                  KC_Z, KC_A,   KC_Q, KC_1,
@@ -67,63 +62,63 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_SPACE,   KC_V, KC_F,  KC_R,  KC_4),
 };
 
-    /**
-    *TODO: 
-    Idle screen off
-    remap keys
-    */
 
+bool screen_status = false;
+uint32_t screen_off_timer = 0;
+bool screen_force = false;
+
+void screen_off(void) {
+        screen_off_timer = 0;
+        screen_status = false;
+        oled_off();
+}
+void screen_on(void) {
+    screen_status = true;
+    if (!screen_force)
+        screen_off_timer = timer_read32();
+    oled_on();
+}
 
 bool process_record_user(uint16_t kc, keyrecord_t *record) {
-    
-    switch (kc) {
+    if (record->event.pressed) { //only on key down
+        switch (kc) {
         case KC_TGSCROLL:
-            if (record->event.pressed) {
-                scroll_mode = (scroll_mode>3) ? 0 : scroll_mode+1;
-            }
+            scroll_mode++;
+            if (scroll_mode == 5) scroll_mode = 0;
             break;
         case KC_GAMEMODE_ON:
-            if (record->event.pressed) {
-                scroll_mode_non_override = scroll_mode;
-                scroll_mode = 4;
-                layer_clear();
-                layer_on(3);
-            }
+            scroll_mode_non_override = scroll_mode;
+            scroll_mode = 4;
+            layer_clear();
+            layer_on(3);
             break;
         case KC_GAMEMODE_OFF:
-            if (record->event.pressed) {
-                scroll_mode = scroll_mode_non_override;
-                layer_clear();
-                layer_on(0);
-            }
+            scroll_mode = scroll_mode_non_override;
+            layer_clear();
+            layer_on(0);
             break;
         case COPY:
-            if (record->event.pressed) {
-                tap_code16(QK_LCTL | KC_C);
-            }
+            tap_code16(QK_LCTL | KC_C);
             break;
         case CUT:
-            if (record->event.pressed) {
-                tap_code16(QK_LCTL | KC_X);
-            }
+            tap_code16(QK_LCTL | KC_X);
             break;
         case PASTE:
-            if (record->event.pressed) {
-                tap_code16(QK_LCTL | KC_V);
-            }
+            tap_code16(QK_LCTL | KC_V);
             break;
         case TOGGLE_OLED:
-            if (record->event.pressed) {
-                if (enabled) {
-                    screen_off();
-                } else {
-                    screen_on();
-                }
+            if (screen_status) {
+                screen_force = false;
+                screen_off();
+            } else {
+                screen_force = true;
+                screen_on();
             }
-            break;
+            return true;
         default:
-            screen_on();
             break;
+        }
+        if (!screen_force) screen_on();
     }
     return true;
 }
@@ -169,36 +164,44 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             }
             alt_tab_timer = timer_read();
             tap_code16(S(KC_TAB));
-        }
+            }
             break;
         case 1: /* Scrub history functionality*/
             if (index == 0) { /* First encoder */
                 tap_code16(QK_LCTL | clockwise ? KC_Y : KC_Z);
-                
             }
             break;
         case 2: /* webpage scroll functionality*/ 
             if (index == 0) { 
                 tap_code(clockwise ? KC_PGDN : KC_PGUP);
-                
             }
             break;
         case 3: /* Volume scroll functionality*/
             if (index == 0) {
                 tap_code(clockwise ? KC_VOLU : KC_VOLD);
-                
             }
+            break;
+        case 4:
+            tap_code(clockwise ? KC_F21 : KC_F22);
             break;
         default:
             break;
     }
     return true;
 }
+
+
+
 void matrix_scan_user(void) {
   if (is_alt_tab_active) {
     if (timer_elapsed(alt_tab_timer) > 1000) {
       unregister_code(KC_LALT);
       is_alt_tab_active = false;
+    }
+  }
+  if (!screen_force && screen_status) {
+    if (timer_elapsed(screen_off_timer) > 10000) {
+        screen_off();
     }
   }
 }
@@ -243,28 +246,29 @@ static void render_anim(void) {
     }
 
 bool oled_task_user(void) {
-    if (enabled) {
+    if (screen_status) {
         render_anim();
         oled_set_cursor(0,5);
-        oled_write_P(PSTR("duck\nboard\n"), false);
-        oled_write_P(PSTR("-----\n"), false);
-        // Host Keyboard Layer Status
-        oled_write_P(PSTR("mode:\n"), false);
-        oled_write_P(PSTR(""), false);
+        oled_write_P(PSTR("duck+board\n>---<\n"), false);
+        // // Host Keyboard Layer Status
+        // oled_write_P(PSTR("mode<\n"), false);
+        // oled_write_P(PSTR(""), false);
 
         switch (get_highest_layer(layer_state)) {
             case 0:
-                oled_write_P(PSTR("base\n"), false);
+                oled_write_P(PSTR("base<\n\n>---<\n"), false);
                 break;
             case 1:
-                oled_write_P(PSTR("func\n"), false);
+                    oled_write_P(PSTR("base macr<\n>---<\n"), false);
                 break;
             case 2:
-                oled_write_P(PSTR("macro\n"), false);
+                if (IS_LAYER_ON(1))
+                    oled_write_P(PSTR("base macrofunc<\n\n"), false);
+                else
+                    oled_write_P(PSTR("base func<\n>---<\n"), false);
                 break;
             case 3:
-                oled_write_P(PSTR("game"), false);
-                break;
+                oled_write_P(PSTR("game<\n\n>---<\n"), false);
         }
         switch (scroll_mode) {
             case 0:
@@ -277,12 +281,11 @@ bool oled_task_user(void) {
                 oled_write_P(PSTR("page"), false);
                 break;
             case 3:
-                oled_write_P(PSTR("volum"), false);
+                oled_write_P(PSTR("vol+-"), false);
                 break;
             case 4:
+                oled_write_P(PSTR("macro"), false);
                 break;
-
-
         }
     } else {
         oled_off();
@@ -293,8 +296,9 @@ bool oled_task_user(void) {
 
 void keyboard_post_init_user(void) {
   //Customise these values to debug
-  debug_enable=true;
-  debug_matrix=true;
+  //debug_enable=true;
+  //debug_matrix=true;
   //debug_keyboard=true;
   //debug_mouse=true;
+  screen_on();
 }
