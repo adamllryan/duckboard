@@ -1,4 +1,4 @@
-﻿;#Requires AutoHotkey v2.0
+;#Requires AutoHotkey v2.0
 #SingleInstance, Force
 
 ;Default Item
@@ -23,14 +23,14 @@ SetAppVolume(ProcessID, Volume := 100)
 
 
 ;Bottom Row
-F21::SetAppVolume(ProcessID, Volume := (Volume == 0 ? 0 : Volume - 5));Volume down
+F21::SetAppVolume(ProcessID, Volume := (Volume == 0 ? 0 : Volume - 5)) ;Volume down
 Return
 F17::Send {Media_Prev} ;Media Previous
 return
 F13::Send {Media_Next} ;Media Next
 return
 ;Bottom Middle Row
-F22::SetAppVolume(ProcessID, Volume := (Volume == 100 ? 100 : Volume + 5));Volume Up
+F22::SetAppVolume(ProcessID, Volume := (Volume == 100 ? 100 : Volume + 5)) ;Volume Up
 Return
 F18:: ;Toggle Mute, not perfect
 if (Volume == 0) {
@@ -43,7 +43,8 @@ SetAppVolume(ProcessID, Volume)
 Return
 
 F14:: ;Prompt Process to change volume controller
-InputBox, item ,Change Volume, Enter Process Name, ,,,,,Locale,,
+;InputBox, item ,Change Volume, Enter Process Name, ,,,,,Locale,,
+WinGet, item, PID, A
 Process Exist, %item%
 ProcessId := ErrorLevel
 Return
