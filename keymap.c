@@ -155,7 +155,10 @@ bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
 bool encoder_update_user(uint8_t index, bool clockwise) {
     switch (scroll_mode) {
-        case 0: /* Alt-tab functionality */
+        case 0: /* Macro Bindings Scroll*/
+            tap_code(clockwise ? KC_F22 : KC_F21);
+            break;
+        case 1: /* Alt-tab functionality */
             if (clockwise) {
             if (!is_alt_tab_active) {
                 is_alt_tab_active = true;
@@ -172,24 +175,22 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             tap_code16(S(KC_TAB));
             }
             break;
-        case 1: /* Scrub history functionality*/
+        case 2: /* Scrub history functionality*/
             if (index == 0) { /* First encoder */
-                tap_code16(QK_LCTL | clockwise ? KC_Y : KC_Z);
+                tap_code16(clockwise ? (QK_LCTL | KC_Y) : (QK_LCTL | KC_Z));
             }
             break;
-        case 2: /* webpage scroll functionality*/ 
+        case 3: /* webpage scroll functionality*/ 
             if (index == 0) { 
                 tap_code(clockwise ? KC_PGDN : KC_PGUP);
             }
             break;
-        case 3: /* Volume scroll functionality*/
+        case 4: /* Volume scroll functionality*/
             if (index == 0) {
                 tap_code(clockwise ? KC_VOLU : KC_VOLD);
             }
             break;
-        case 4:
-            tap_code(clockwise ? KC_F22 : KC_F21);
-            break;
+        
         default:
             break;
     }
@@ -280,19 +281,19 @@ bool oled_task_user(void) {
         }
         switch (scroll_mode) {
             case 0:
-                oled_write_P(PSTR("windw"), false);
+                oled_write_P(PSTR("macro"), false);
                 break;
             case 1:
-                oled_write_P(PSTR("histo"), false);
+                oled_write_P(PSTR("windw"), false);
                 break;
             case 2:
-                oled_write_P(PSTR("page"), false);
+                oled_write_P(PSTR("histo"), false);
                 break;
             case 3:
-                oled_write_P(PSTR("vol+-"), false);
+                oled_write_P(PSTR("page"), false);
                 break;
             case 4:
-                oled_write_P(PSTR("macro"), false);
+                oled_write_P(PSTR("vol+-"), false);
                 break;
         }
     } else {
