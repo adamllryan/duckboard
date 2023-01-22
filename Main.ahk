@@ -44,9 +44,9 @@ Return
 
 F14:: ;Prompt Process to change volume controller
 ;InputBox, item ,Change Volume, Enter Process Name, ,,,,,Locale,,
-WinGet, item, PID, A
-Process Exist, %item%
-ProcessId := ErrorLevel
+WinGet, ProcessId, PID, A
+;Process Exist, %item%
+;ProcessId := ErrorLevel
 Return
 
 ;Middle Top Row
