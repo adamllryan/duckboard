@@ -41,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                  TG(1),    KC_F23,    KC_F19,    KC_F15,
                  TO(0),    KC_F22,    KC_F18,    KC_F14,
         KC_GAMEMODE_ON, KC_TGSCROLL,    KC_F21,    KC_F17,    KC_F13,
-        TOGGLE_OLED, KC_HL,    KC_COPY,    KC_PASTE,  LT(2,KC_MPLY)),
+        TOGGLE_OLED, KC_HL,    KC_COPY,    KC_PASTE,  LT(4,KC_MPLY)),
     [1] = LAYOUT( //macro
                  KC_TRNS, PROGRAMMABLE_BUTTON_12, PROGRAMMABLE_BUTTON_8, PROGRAMMABLE_BUTTON_4,
                  KC_TRNS, PROGRAMMABLE_BUTTON_11, PROGRAMMABLE_BUTTON_7, PROGRAMMABLE_BUTTON_3,
@@ -53,13 +53,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                  KC_TRNS, KC_F11,   KC_F7, KC_F3,
                  KC_TRNS, KC_F10, KC_F6, KC_F2,
         KC_TRNS, KC_TRNS,  KC_F9, KC_F5, KC_F1,
-        QK_BOOT,   KC_TRNS, KC_TRNS,  KC_TRNS,  KC_TRNS),
+        KC_TRNS,   KC_TRNS, KC_TRNS,  KC_TRNS,  KC_TRNS),
     [3] = LAYOUT( //game
                  KC_LCTL,   KC_LSFT, KC_TAB, KC_ESC,
                  KC_Z, KC_A,   KC_Q, KC_1,
                  KC_X, KC_S, KC_W, KC_2,
         KC_GAMEMODE_OFF, KC_C,  KC_D, KC_E, KC_3,
         KC_SPACE,   KC_V, KC_F,  KC_R,  KC_4),
+    [4] = LAYOUT(
+                 KC_TRNS, RGB_TOG, RGB_MOD, KC_TRNS,
+                 RGB_HUI, RGB_SAI, RGB_VAI, KC_TRNS,
+                 RGB_HUD, RGB_SAD, RGB_VAD, KC_TRNS,
+        KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        QK_BOOT,   KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS),
 };
 
 
@@ -182,7 +188,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             }
             break;
         case 4:
-            tap_code(clockwise ? KC_F21 : KC_F22);
+            tap_code(clockwise ? KC_F22 : KC_F21);
             break;
         default:
             break;
@@ -269,6 +275,8 @@ bool oled_task_user(void) {
                 break;
             case 3:
                 oled_write_P(PSTR("game<\n\n>---<\n"), false);
+            case 4:
+                oled_write_P(PSTR("settings<\n\n>---<\n"), false);
         }
         switch (scroll_mode) {
             case 0:
