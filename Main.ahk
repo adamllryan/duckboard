@@ -3,7 +3,7 @@
 
 ;Default Item
 item := "spotify.exe"
-Process Exist, %item%
+Process, Wait, %item%, 60
 ProcessId := ErrorLevel
 If (!ProcessId)
 {
